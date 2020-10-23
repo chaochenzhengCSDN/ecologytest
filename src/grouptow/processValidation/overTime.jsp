@@ -99,8 +99,7 @@
             }
         });
     jQuery("button[name='addbutton0']").click(function () {//明细表添加一行，给明细表字段添加事件
-        var rowindex = jQuery("input[name='check_node_0']").last().val();
-        setEvent(rowindex);
+        setEvent(0);
         var rowindex = jQuery("input[name='check_node_0']").last().attr("_rowindex");
         setEvent(rowindex);
         $(workHour_field + rowindex).attr("readOnly", "readOnly");

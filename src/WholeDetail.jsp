@@ -5,6 +5,7 @@
 <%@page import="java.text.DecimalFormat" %>
 <%@page import="java.text.ParseException" %>
 <%@page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.*" %>
 <jsp:useBean id="BaseBean" class="weaver.general.BaseBean"/>
 <jsp:useBean id="ResourceComInfo" class="weaver.hrm.resource.ResourceComInfo"/>
 <%

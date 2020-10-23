@@ -236,7 +236,8 @@
             //判断出差开始是否大于出差结束
             if (endDate >= startDate && times >= 0.5 && startDate != "" && endDate != "" && startTime != "" && endTime != "") {
                 $(business_days_field).val(Math.round((times / 7.5) * 10) / 10);
-            } else if ( startDate != "" && endDate != "" && startTime != "" && endTime != "" && (startDate > endDate || (startDate == endDate && startTime > endTime))) {
+            }
+            if ( startDate != "" && endDate != "" && startTime != "" && endTime != "" && (startDate > endDate || (startDate == endDate && startTime > endTime))) {
                 $(business_days_field).val(0);
                 window.top.Dialog.alert("截止时间不能早于开始时间");
                 bool = false;

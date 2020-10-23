@@ -61,23 +61,23 @@
         });
         //选择开始日期
         jQuery(startDate_field).bindPropertyChange(function (obj) {
-            checkDate("");
+            checkDate();
         });
         //选择开始时间
         jQuery(select_start_field).bindPropertyChange(function (obj) {
-            checkDate("");
+            checkDate();
         });
         //选择结束日期
         jQuery(endDate_field).bindPropertyChange(function (obj) {
-            checkDate("");
+            checkDate();
         });
         //选择结束时间
         jQuery(select_end_field).bindPropertyChange(function (obj) {
-            checkDate("");
+            checkDate();
         });
 
         /** 排班 (0:出勤 1:不出勤) (0:节假日 1:不是节假日) */
-        function checkDate(checkState) {
+        function checkDate() {
             var days1;//查询出差开始日期到出差结束日期期间（除了起始日期和结束日期当天）有几天是工作日
             var days2;//查询出差开始日期到出差结束日期期间（除了起始日期和结束日期当天）有几天是非工作日(包含法定假日，周六单休，周末放假)
             var attendancestatus1;//出差开始当天是否为工作日start
@@ -238,16 +238,12 @@
                 $(business_days_field).val(Math.round((times / 7.5) * 10) / 10);
             } else if ( startDate != "" && endDate != "" && startTime != "" && endTime != "" && (startDate > endDate || (startDate == endDate && startTime > endTime))) {
                 $(business_days_field).val(0);
-                if ( checkState == "checkCustomize" ) { //流程提交前
-                    window.top.Dialog.alert("截止时间不能早于开始时间");
-                    bool = false;
-                }
+                window.top.Dialog.alert("截止时间不能早于开始时间");
+                bool = false;
             } else if ( startDate != "" && endDate != "" && startTime != "" && endTime != "" && (startDate < endDate || (startDate == endDate && startTime <= endTime)) && times < 0.5) {
                 $(business_days_field).val(0);
-                if ( checkState == "checkCustomize") { //流程提交前
-                    window.top.Dialog.alert("出差小时数不能小于0.5h");
-                    bool = false;
-                }
+                window.top.Dialog.alert("出差小时数不能小于0.5h");
+                bool = false;
             }
             $(business_days_field + "span").attr("style", "display:none;");
             $(business_days_field).attr("readOnly", "readOnly"); //只读

@@ -198,35 +198,38 @@
                         }
                         //查询出当月请假日期，用集合接收
                         List<String> curLeaveCondition = getCurLeaveCondition(month,id);
-                        for (String leaveRecord : curLeaveCondition) {
-                            String leaveDate=leaveRecord.split(",")[0];//请假日期
-                            String leaveStartTime =leaveRecord.split(",")[1];//请假开始时间
-                            String leaveEndTime =leaveRecord.split(",")[2];//请假结束时间
-                            List<String> list = value.get(leaveDate);
-                            if(curdateList.contains(leaveDate)){
-                                //当天为工作日 获取当天的集合 上午半天 全天 下午半天
-                                if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=705&&getTimeMin(leaveEndTime)<=780){
-                                    list.remove("08:30:00:1");
-                                    list.remove("11:45:00:2");
-                                }else if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=1035){
-                                    list.remove("08:30:00:1");
-                                    list.remove("11:45:00:2");
-                                    list.remove("13:00:00:1");
-                                    list.remove("17:15:00:2");
-                                }else if(getTimeMin(leaveStartTime)>=705&&getTimeMin(leaveStartTime)<=780&&getTimeMin(leaveEndTime)>=1035){
-                                    list.remove("13:00:00:1");
-                                    list.remove("17:15:00:2");
-                                }
-                            }else if(saturdayList.contains(leaveDate)){
-                                //当天为单休周六上午
-                                if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=705){
-                                    list.remove("08:30:00:1");
-                                    list.remove("11:45:00:2");
-                                }
-                            }else{
-                                 //当天为非工作日
-                            }
+                        if(curLeaveCondition.size()>0){
+                             for(int i= 0;i<curLeaveCondition.size();i++){
+                                 String leaveDate=curLeaveCondition.get(i).split(",")[0];//请假日期
+                                 String leaveStartTime =curLeaveCondition.get(i).split(",")[1];//请假开始时间
+                                 String leaveEndTime =curLeaveCondition.get(i).split(",")[2];//请假结束时间
+                                 List<String> list = value.get(leaveDate);
+//                                 if(curdateList.contains(leaveDate)){
+//                                    //当天为工作日 获取当天的集合 上午半天 全天 下午半天
+//                                    if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=705&&getTimeMin(leaveEndTime)<=780){
+//                                        list.remove("08:30:00:1");
+//                                        list.remove("11:45:00:2");
+//                                    }else if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=1035){
+//                                        list.remove("08:30:00:1");
+//                                        list.remove("11:45:00:2");
+//                                        list.remove("13:00:00:1");
+//                                        list.remove("17:15:00:2");
+//                                    }else if(getTimeMin(leaveStartTime)>=705&&getTimeMin(leaveStartTime)<=780&&getTimeMin(leaveEndTime)>=1035){
+//                                        list.remove("13:00:00:1");
+//                                        list.remove("17:15:00:2");
+//                                    }
+//                                 }else if(saturdayList.contains(leaveDate)){
+//                                        //当天为单休周六上午
+//                                    if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=705){
+//                                        list.remove("08:30:00:1");
+//                                        list.remove("11:45:00:2");
+//                                    }
+//                                 }else{
+//                                        //当天为非工作日
+//                                 }
+                             }
                         }
+
                     }
                     //调用方法，改变出差时的打卡时间
                      changeBusinessTripTime(value,id,likeDate,"1","2");

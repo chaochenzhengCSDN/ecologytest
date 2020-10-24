@@ -340,6 +340,7 @@
             }else if(overtimeType==1){
                 if(res1==""){
                     window.top.Dialog.alert("当天无打卡记录，无法在该时间段申请加班");
+                    cleanAll(rowindex,0,0);
                     bool =false;
                     return bool;
                 }
@@ -440,6 +441,7 @@
             }else if(overtimeType==2){
                 if(res1==""){
                     window.top.Dialog.alert("当天无打卡记录，无法在该时间段申请加班");
+                    cleanAll(rowindex,0,0);
                     bool =false;
                     return bool;
                 }
@@ -479,6 +481,7 @@
             }else if(overtimeType==3){
                 if(businesstripStartTime==""||businesstripendTime==""){
                     window.top.Dialog.alert("当天无出差申请或者无业务考勤");
+                    cleanAll(rowindex,0,0);
                     bool =false;
                     return bool;
                 }

@@ -321,6 +321,7 @@ import="weaver.general.Util"%> <%@page import="weaver.conn.RecordSet"%>
                 var signOutTime;
                 if(res1==""){
                     alert("当天无打卡记录，无法在该时间段申请加班");
+                    cleanAll(rowindex,0,0);
                     bool = false;
                     return bool;
                 }
@@ -349,6 +350,7 @@ import="weaver.general.Util"%> <%@page import="weaver.conn.RecordSet"%>
             }else if(overtimeType==1){
                 if(res1==""){
                     alert("当天无打卡记录，无法在该时间段申请加班");
+                    cleanAll(rowindex,0,0);
                     bool = false;
                     return bool;
                 }
@@ -449,6 +451,7 @@ import="weaver.general.Util"%> <%@page import="weaver.conn.RecordSet"%>
             }else if(overtimeType==2){
                 if(res1==""){
                     alert("当天无打卡记录，无法在该时间段申请加班");
+                    cleanAll(rowindex,0,0);
                     bool = false;
                     return bool;
                 }
@@ -488,6 +491,7 @@ import="weaver.general.Util"%> <%@page import="weaver.conn.RecordSet"%>
             }else if(overtimeType==3){
                 if(businesstripStartTime==""||businesstripendTime==""){
                     alert("当天无出差申请或者无业务考勤");
+                    cleanAll(rowindex,0,0);
                     bool = false;
                     return bool;
                 }

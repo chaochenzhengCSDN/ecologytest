@@ -311,6 +311,7 @@
                 var signOutTime;
                 if(res1==""){
                     window.top.Dialog.alert("当天无打卡记录，无法在该时间段申请加班");
+                    cleanAll(rowindex,0,0);
                     bool =false;
                     return bool;
                 }

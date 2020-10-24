@@ -144,7 +144,50 @@
 
                     //根据键去找值，用get(Object key)方法实现
                     Map<String, List<String>> value = areaResult.get(key);
-
+                    //单独处理总经理考勤报表 20201021 zcc
+                    if("5872".equals(id)){
+                        //遍历本月整天出勤的集合attendancestatus=0
+                        for(String day1:curdateList){
+                            //如果当天不包含请假数据，则将标准数据注入 含有请假数据，则根据请假时间段进行更新数据
+                            value.put(day1,getStandardSignTime());
+                        }
+                        //遍历本月半天出勤的集合attendancestatus=2
+                        for(String day2:saturdayList){
+                            //如果当天不包含请假数据，则将标准数据注入 含有请假数据，则根据请假时间段进行更新数据
+                            value.put(day2,getStandardSignTime());
+                        }
+                        //查询出当月请假日期，用集合接收
+                        List<String> curLeaveCondition = getCurLeaveCondition(month,id);
+                        for (String leaveRecord : curLeaveCondition) {
+                            String leaveDate=leaveRecord.split(",")[0];//请假日期
+                            String leaveStartTime =leaveRecord.split(",")[1];//请假开始时间
+                            String leaveEndTime =leaveRecord.split(",")[2];//请假结束时间
+                            List<String> list = value.get(leaveDate);
+                            if(curdateList.contains(leaveDate)){
+                                //当天为工作日 获取当天的集合 上午半天 全天 下午半天
+                                if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=705&&getTimeMin(leaveEndTime)<=780){
+                                    list.remove("08:30:00:1");
+                                    list.remove("11:45:00:2");
+                                }else if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=1035){
+                                    list.remove("08:30:00:1");
+                                    list.remove("11:45:00:2");
+                                    list.remove("13:00:00:1");
+                                    list.remove("17:15:00:2");
+                                }else if(getTimeMin(leaveStartTime)>=705&&getTimeMin(leaveStartTime)<=780&&getTimeMin(leaveEndTime)>=1035){
+                                    list.remove("13:00:00:1");
+                                    list.remove("17:15:00:2");
+                                }
+                            }else if(saturdayList.contains(leaveDate)){
+                                //当天为单休周六上午
+                                if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=705){
+                                    list.remove("08:30:00:1");
+                                    list.remove("11:45:00:2");
+                                }
+                            }else{
+                                //当天为非工作日
+                            }
+                        }
+                    }
                     //调用方法，改变出差时的打卡时间
                     changeBusinessTripTime(value,checkMinDate,checkMaxDate,id,likeDate,"1","2");
 
@@ -1870,6 +1913,107 @@
                     map.put(curdate,attendanceStatus);
                 }
                 return map;
+            }
+        %>
+        <%!
+            /**
+             * 获取标准打卡时间
+             * @return List<Integer>
+             */
+            private static List<String> getStandardSignTime() {
+                List<String> standardList = new ArrayList<String>();
+                standardList.add(0, "08:30:00:1");
+                standardList.add(1, "11:45:00:2");
+                standardList.add(2, "13:00:00:1");
+                standardList.add(3, "17:15:00:2");
+                return standardList;
+            }
+        %>
+        <%!
+            /**
+             * 获取当天的请假日期和请假开始时间和请假结束时间
+             * @param curdate
+             * @param id
+             * @return List<String>
+             */
+            private static List<String> getCurLeaveCondition(String curdate, String id) {
+                String getLeaveSql = "select * from uf_AskForLeave where userid='" + id + "'  and type in (0,8,9) and start_date>='" + curdate + "' and end_date<= '" + curdate + "'";
+                RecordSet getLeaveRs = new RecordSet();
+                //b.writeLog("当月请假sql语句为:"+getLeaveSql);
+                getLeaveRs.execute(getLeaveSql);
+                String leaveRecord = "";
+                List<String> leaveRecordList = new ArrayList<String>();
+                //获取当天请假日期 请假开始时间 请假结束时间
+                while (getLeaveRs.next()) {
+                    String startDate = Util.null2String(getLeaveRs.getString("start_date"));
+                    //调休(年假)请假结束日期
+                    String endDate = Util.null2String(getLeaveRs.getString("end_date"));
+                    //调休(年假)请假开始时间
+                    String startTime = Util.null2String(getLeaveRs.getString("start_time"));
+                    //调休(年假)请假结束时间
+                    String endTime = Util.null2String(getLeaveRs.getString("end_time"));
+                    //获取请假当天出勤状态 0全天出勤 1非出勤 2出勤半天
+                    String status = getAttendanceStatus(curdate);
+                    if (startDate.equals(endDate)) {
+                        //如果请假天数为1天
+                        if (status.equals("0")) {
+                            //请假开始时间小于08:30则默认为08：30；请假结束时间大于17：15则默认为17：15 请假记录格式为 请假日期，开始时间，结束时间
+                            startTime = startTime.compareTo("08:30") <= 0 ? "08:30" : startTime;
+                            endTime = endTime.compareTo("17:15") >= 0 ? "17:15" : endTime;
+                            leaveRecord = curdate + "," + startTime + "," + endTime;
+                        } else if (status.equals("2")) {
+                            //请假开始时间小于08:30则默认为08：30；请假结束时间大于11：45则默认为11：45 请假记录格式为 请假日期，开始时间，结束时间
+                            startTime = startTime.compareTo("08:30") <= 0 ? "08:30" : startTime;
+                            endTime = endTime.compareTo("11:45") >= 0 ? "11:45" : endTime;
+                            leaveRecord = curdate + "," + startTime + "," + endTime;
+                        }
+                    } else {
+                        //如果请假天数大于1天
+                        if (curdate.equals(startDate)) {
+                            //当天为开始日期
+                            if (status.equals("0")) {
+                                //请假开始时间大于17:15则默认为17:15；请假结束时间默认为17：15 请假记录格式为 请假日期，开始时间，结束时间
+                                startTime = startTime.compareTo("17:15") >= 0 ? "17:15" : startTime;
+                                endTime = "17:15";
+                                leaveRecord = curdate + "," + startTime + "," + endTime;
+                            } else if (status.equals("2")) {
+                                //请假开始时间大于11:45则默认为11:45；请假结束时间默认为11:45 请假记录格式为 请假日期，开始时间，结束时间
+                                startTime = startTime.compareTo("11:45") >= 0 ? "11:45" : startTime;
+                                endTime = "11:45";
+                                leaveRecord = curdate + "," + startTime + "," + endTime;
+                            }
+                        } else if (curdate.equals(endDate)) {
+                            //当天为结束日期
+                            if (status.equals("0")) {
+                                //请假开始时间默认为08:30；请假结束时间大于17：15则默认为17：15 请假记录格式为 请假日期，开始时间，结束时间
+                                startTime = "08:30";
+                                endTime = endTime.compareTo("17:15") >= 0 ? "17:15" : endTime;
+                                leaveRecord = curdate + "," + startTime + "," + endTime;
+                            } else if (status.equals("2")) {
+                                //请假开始时间默认为08:30；请假结束时间大于11：45则默认为11：45 请假记录格式为 请假日期，开始时间，结束时间
+                                startTime = "08:30";
+                                endTime = endTime.compareTo("11:45") >= 0 ? "11:45" : endTime;
+                                leaveRecord = curdate + "," + startTime + "," + endTime;
+                            }
+                        } else {
+                            //当天不为开始日期和结束日期
+                            if (status.equals("0")) {
+                                //请假开始时间默认为08:30；请假结束时间则默认为17：15 请假记录格式为 请假日期，开始时间，结束时间
+                                startTime = "08:30";
+                                endTime = "17:15";
+                                leaveRecord = curdate + "," + startTime + "," + endTime;
+                            } else if (status.equals("2")) {
+                                //请假开始时间默认为08:30；请假结束时间则默认为11：45 请假记录格式为 请假日期，开始时间，结束时间
+                                startTime = "08:30";
+                                endTime = "11:45";
+                                leaveRecord = curdate + "," + startTime + "," + endTime;
+                            }
+                        }
+                    }
+                    //将请假记录统一放入到集合中
+                    leaveRecordList.add(leaveRecord);
+                }
+                return leaveRecordList;
             }
         %>
     </table>

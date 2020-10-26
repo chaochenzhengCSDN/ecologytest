@@ -145,51 +145,67 @@
                     //根据键去找值，用get(Object key)方法实现
                     Map<String, List<String>> value = areaResult.get(key);
                     //单独处理总经理考勤报表 20201021 zcc
-//                    if("5872".equals(id)){
-//                        //遍历本月整天出勤的集合attendancestatus=0
-//                        for(String day1:curdateList){
-//                            //如果当天不包含请假数据，则将标准数据注入 含有请假数据，则根据请假时间段进行更新数据
-//                            value.put(day1,getStandardSignTime());
-//                        }
-//                        //遍历本月半天出勤的集合attendancestatus=2
-//                        for(String day2:saturdayList){
-//                            //如果当天不包含请假数据，则将标准数据注入 含有请假数据，则根据请假时间段进行更新数据
-//                            value.put(day2,getStandardSignTime());
-//                        }
-//                        //查询出当月请假日期，用集合接收
-//                        List<String> curLeaveCondition = getCurLeaveCondition(month,id);
-//                        if(curLeaveCondition.size()>0){
-//                            for(int i= 0;i<curLeaveCondition.size();i++){
-//                                String leaveDate=curLeaveCondition.get(i).split(",")[0];//请假日期
-//                                String leaveStartTime =curLeaveCondition.get(i).split(",")[1];//请假开始时间
-//                                String leaveEndTime =curLeaveCondition.get(i).split(",")[2];//请假结束时间
-//                                List<String> list = value.get(leaveDate);
-//                                if(curdateList.contains(leaveDate)){
-//                                    //当天为工作日 获取当天的集合 上午半天 全天 下午半天
-//                                    if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=705&&getTimeMin(leaveEndTime)<=780){
-//                                        list.remove("08:30:00:1");
-//                                        list.remove("11:45:00:2");
-//                                    }else if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=1035){
-//                                        list.remove("08:30:00:1");
-//                                        list.remove("11:45:00:2");
-//                                        list.remove("13:00:00:1");
-//                                        list.remove("17:15:00:2");
-//                                    }else if(getTimeMin(leaveStartTime)>=705&&getTimeMin(leaveStartTime)<=780&&getTimeMin(leaveEndTime)>=1035){
-//                                        list.remove("13:00:00:1");
-//                                        list.remove("17:15:00:2");
-//                                    }
-//                                }else if(saturdayList.contains(leaveDate)){
-//                                    //当天为单休周六上午
-//                                    if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=705){
-//                                        list.remove("08:30:00:1");
-//                                        list.remove("11:45:00:2");
-//                                    }
-//                                }else{
-//                                    //当天为非工作日
-//                                }
-//                            }
-//                        }
-//                    }
+                    if("5872".equals(id)){
+                        //遍历本月整天出勤的集合attendancestatus=0
+                        for(String day1:curdateList){
+                            //如果当天不包含请假数据，则将标准数据注入 含有请假数据，则根据请假时间段进行更新数据
+                            if(value.keySet().contains(day1)){
+                                List<String> list = value.get(day1);
+                                list.addAll(getStandardSignTime());
+                                value.put(day1,list);
+                            }else{
+                                value.put(day1,getStandardSignTime());
+                            }
+                        }
+                        //遍历本月半天出勤的集合attendancestatus=2
+                        for(String day2:saturdayList){
+                            //如果当天不包含请假数据，则将标准数据注入 含有请假数据，则根据请假时间段进行更新数据
+                            if(value.keySet().contains(day2)){
+                                List<String> list = value.get(day2);
+                                list.add("08:30:00:1");
+                                list.add("11:45:00:2");
+                                value.put(day2,list);
+                            }else{
+                                List<String> list = new LinkedList<String>();
+                                list.add("08:30:00:1");
+                                list.add("11:45:00:2");
+                                value.put(day2,list);
+                            }
+                        }
+                        //查询出当月请假日期，用集合接收
+                        List<String> curLeaveCondition = getCurLeaveCondition(month,id);
+                        if(curLeaveCondition.size()>0){
+                            for(int i= 0;i<curLeaveCondition.size();i++){
+                                String leaveDate=curLeaveCondition.get(i).split(",")[0];//请假日期
+                                String leaveStartTime =curLeaveCondition.get(i).split(",")[1];//请假开始时间
+                                String leaveEndTime =curLeaveCondition.get(i).split(",")[2];//请假结束时间
+                                List<String> list = value.get(leaveDate);
+                                if(curdateList.contains(leaveDate)){
+                                    //当天为工作日 获取当天的集合 上午半天 全天 下午半天
+                                    if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=705&&getTimeMin(leaveEndTime)<=780){
+                                        list.remove("08:30:00:1");
+                                        list.remove("11:45:00:2");
+                                    }else if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=1035){
+                                        list.remove("08:30:00:1");
+                                        list.remove("11:45:00:2");
+                                        list.remove("13:00:00:1");
+                                        list.remove("17:15:00:2");
+                                    }else if(getTimeMin(leaveStartTime)>=705&&getTimeMin(leaveStartTime)<=780&&getTimeMin(leaveEndTime)>=1035){
+                                        list.remove("13:00:00:1");
+                                        list.remove("17:15:00:2");
+                                    }
+                                }else if(saturdayList.contains(leaveDate)){
+                                    //当天为单休周六上午
+                                    if(getTimeMin(leaveStartTime)<=510&&getTimeMin(leaveEndTime)>=705){
+                                        list.remove("08:30:00:1");
+                                        list.remove("11:45:00:2");
+                                    }
+                                }else{
+                                    //当天为非工作日
+                                }
+                            }
+                        }
+                    }
                     //调用方法，改变出差时的打卡时间
                     changeBusinessTripTime(value,checkMinDate,checkMaxDate,id,likeDate,"1","2");
 
@@ -2016,6 +2032,17 @@
                     leaveRecordList.add(leaveRecord);
                 }
                 return leaveRecordList;
+            }
+        %>
+        <%!
+            /**
+             * 获取当天的出勤状态 0 出勤满 1 非出勤 2出勤半天
+             * @param curdate
+             * @return String
+             */
+            private static String getAttendanceStatus(String curdate) {
+                String getAttendanceStatusSql = "select attendanceStatus from uf_attendance where curdate like '%" + curdate + "%'";
+                return getName(getAttendanceStatusSql);
             }
         %>
     </table>

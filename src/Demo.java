@@ -1,5 +1,6 @@
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author zcc
@@ -18,5 +19,11 @@ public class Demo {
         System.out.println("list = " + list);
         list.remove("2");
         System.out.println("list = " + list);
+
+        ConcurrentHashMap<String, String> stringStringConcurrentHashMap = new ConcurrentHashMap<String, String>();
+        stringStringConcurrentHashMap.put("1","sdsad");
+        System.out.println("stringStringConcurrentHashMap = " + stringStringConcurrentHashMap);
+        String s = stringStringConcurrentHashMap.get("2");
+        System.out.println("s = " + s);
     }
 }

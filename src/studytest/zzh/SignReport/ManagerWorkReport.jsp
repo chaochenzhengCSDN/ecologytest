@@ -90,8 +90,7 @@
 				if(leaderId.equals(String.valueOf(user.getUID()))){
 					//项目总监 可以查询需求产品部 开发一部 开发二部 开发三部 开发四部 基础研发部 质量部74613的考勤人员 （包含自己）
                     String sql=new String();
-					b.writeLog("用户id:"+user.getUID());
-					if("9341".equals(user.getUID())){
+					if("9341".equals(String.valueOf(user.getUID()))){
 						sql = "SELECT (SELECT subcompanyname FROM hrmsubcompany WHERE id = hre.subcompanyid1) AS subcompanyname,hde.departmentname,hre.workCode,hre.lastname,hsc.signDate,hsc.signTime,hsc.signType  FROM hrmresource hre LEFT JOIN hrmschedulesign hsc ON hre.id = hsc.userid AND hsc.signDate BETWEEN '"+checkMinDate+"' AND '"+checkMaxDate+"' AND hsc.isInCom = '1' LEFT JOIN hrmdepartment hde ON hre.departmentid=hde.id where";
 						sql+="  (hre.departmentid in (129581,9619,9621,37079,129579,129580,129582) or hre.id=9341) AND CASE WHEN hre.startdate is NULL THEN '"+defaultEndDate+"' ELSE hre.startdate END <= '"+defaultEndDate+"' AND CASE WHEN hre.enddate is NULL THEN '"+defaultStartDate+"' ELSE hre.enddate END >= '"+defaultStartDate+"' and hre.accounttype !=1 ORDER BY hde.id,hsc.signDate ASC";
 					}else{

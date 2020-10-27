@@ -89,7 +89,7 @@
 				//查询该人员是否为部门领导以及部门是否对应
 				if(leaderId.equals(String.valueOf(user.getUID()))){
 					//项目总监 可以查询需求产品部 开发一部 开发二部 开发三部 开发四部 基础研发部 质量部74613的考勤人员 （包含自己）
-                    String sql="";
+                    String sql=new String();
 					if("9341".equals(user.getUID())){
 						sql = "SELECT (SELECT subcompanyname FROM hrmsubcompany WHERE id = hre.subcompanyid1) AS subcompanyname,hde.departmentname,hre.workCode,hre.lastname,hsc.signDate,hsc.signTime,hsc.signType  FROM hrmresource hre LEFT JOIN hrmschedulesign hsc ON hre.id = hsc.userid AND hsc.signDate BETWEEN '"+checkMinDate+"' AND '"+checkMaxDate+"' AND hsc.isInCom = '1' LEFT JOIN hrmdepartment hde ON hre.departmentid=hde.id where";
 						sql+="  (hre.departmentid in (74619,74605,74604,74608,74612,74617,74613) or hre.id=9341) AND CASE WHEN hre.startdate is NULL THEN '"+defaultEndDate+"' ELSE hre.startdate END <= '"+defaultEndDate+"' AND CASE WHEN hre.enddate is NULL THEN '"+defaultStartDate+"' ELSE hre.enddate END >= '"+defaultStartDate+"' and hre.accounttype !=1 ORDER BY hde.id,hsc.signDate ASC";
@@ -98,7 +98,7 @@
 						sql+=" EXISTS (SELECT 1 FROM hrmdepartment WHERE id in ( "+user.getUserDepartment()+" ) AND id = hre.departmentid) AND";
 						sql+=" hre.subcompanyid1 in(select id from hrmsubcompany start with id = 761 connect by prior  id = supsubcomid) AND CASE WHEN hre.startdate is NULL THEN '"+defaultEndDate+"' ELSE hre.startdate END <= '"+defaultEndDate+"' AND CASE WHEN hre.enddate is NULL THEN '"+defaultStartDate+"' ELSE hre.enddate END >= '"+defaultStartDate+"' and hre.accounttype !=1 ORDER BY hde.id,hsc.signDate ASC";
 					}
-					
+					b.writeLog("sql:"+sql);
 					//定义集合，把数据进行封装
 					Map<String,Map<String, List<String>>> areaResult = getAreaResult(sql);
 					//判断获取的数据是否为空

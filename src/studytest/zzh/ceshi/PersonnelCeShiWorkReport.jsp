@@ -75,16 +75,14 @@
 
             <td align='center' rowspan=2><b>旷工（小时）</b></td>
             <td align='center' rowspan=2><b>异常流程次数</b></td>
-            <td align='center' colspan=5><b>请假（小时）</b></td>
+            <td align='center' colspan=3><b>请假（小时）</b></td>
             <td align='center' colspan=3><b>加班（小时）</b></td>
             <td align='center' rowspan=2><b>剩余调休时间（小时）</b></td>
             <td align='center' colspan=3><b>年假</b></td>
         </tr>
         <tr id="trr2">
-            <td align='center'><b>年休假</b></td>
-            <td align='center'><b>婚假</b></td>
-            <td align='center'><b>产假</b></td>
             <td align='center'><b>调休</b></td>
+            <td align='center'><b>年休假</b></td>
             <td align='center'><b>事假</b></td>
             <td align='center'><b>加点工时</b></td>
             <td align='center'><b>加班工时</b></td>
@@ -324,10 +322,6 @@
                     changeLeaveTime(value,  id,likeDate,0,"3","4");
                     //调用方法，改变请假(事假)的打卡时间
                     changeLeaveTime(value,  id,likeDate,9,"5","6");
-                    //调用方法，改变请假(婚假)的打卡时间
-                    changeLeaveTime(value,  id,likeDate,1,"5","6");
-                    //调用方法，改变请假(产假)的打卡时间
-                    changeLeaveTime(value,  id,likeDate,2,"5","6");
                     //判断value集合是否为空
                     if (value.size() > 0) {
                         //获取结果集所有键的集合，用keySet()方法实现
@@ -2609,11 +2603,9 @@
                  */
                 private static List<Integer> getLeaveStandard() {
                     List<Integer> typeList = new ArrayList<Integer>();
-                    typeList.add(0, 0);
-                    typeList.add(1, 1);
-                    typeList.add(2, 2);
-                    typeList.add(3, 8);
-                    typeList.add(4, 9);
+                    typeList.add(0, 8);
+                    typeList.add(1, 0);
+                    typeList.add(2, 9);
                     return typeList;
                 }
             %>

@@ -61,7 +61,7 @@
 </head>
 <body>
 <div id="div1">
-    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+    <table width="100%" border="1" cellpadding="0" cellspacing="0">
         <tr id="trr1">
             <td align='center' rowspan=2><b>公司</b></td>
             <td align='center' rowspan=2><b>部门</b></td>

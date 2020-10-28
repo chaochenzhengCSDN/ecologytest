@@ -506,7 +506,7 @@
                                         actualWorkingHours +=Double.parseDouble(getDifferenceHours(secondSign,"11:45"));//计算请假结束时间到11：45这段时间的实际工时
                                     }
                                 }
-                                b.writeLog("当天日期:"+key3+";当天迟到分钟数:"+lateTime+";当天早退分钟数:"+earlyTime+";当天上午旷工小时数:"+countHours+";当天上午实际工时："+actualWorkingHours);
+                                //b.writeLog("当天日期:"+key3+";当天迟到分钟数:"+lateTime+";当天早退分钟数:"+earlyTime+";当天上午旷工小时数:"+countHours+";当天上午实际工时："+actualWorkingHours);
                                 //b.writeLog("当天日期:"+key3+"<---->当天下午打卡情况:"+afternoonList1+"<---->当天打卡大小："+afternoonList1.size());
                                 List<String> afternoonList2=new LinkedList<String>();
                                 for(String time6:afternoonList1){
@@ -522,7 +522,7 @@
                                 }
                                 int afternoonList1Size=afternoonList1.size();
                                 afternoonList1Size=(afternoonList2.size()>=2)?(afternoonList1Size-afternoonList2.size()+1):afternoonList1Size;
-                                b.writeLog("当天下午修正过的打卡时间:"+afternoonList1+";下午集合大小:"+afternoonList1Size);
+                                //b.writeLog("当天下午修正过的打卡时间:"+afternoonList1+";下午集合大小:"+afternoonList1Size);
                                 /*
                                 *
                                 * 计算带请假的迟到早退旷工小时数(周一-----周五下午)
@@ -651,7 +651,7 @@
                                         actualWorkingHours +=Double.parseDouble(getDifferenceHours(forthSign,"17:15"));//计算请假结束时间到17：15这段时间的实际工时
                                     }
                                 }
-                                b.writeLog("当天日期:"+key3+";当天迟到分钟数:"+lateTime+";当天早退分钟数:"+earlyTime+";当天下午旷工:"+countHours1+";当天下午实际工时:"+actualWorkingHours);
+                                //b.writeLog("当天日期:"+key3+";当天迟到分钟数:"+lateTime+";当天早退分钟数:"+earlyTime+";当天下午旷工:"+countHours1+";当天下午实际工时:"+actualWorkingHours);
                                 curdateList1.add(key3);
                             }
                             else if(saturdayList.contains(key3)){
@@ -789,7 +789,7 @@
                                         actualWorkingHours +=Double.parseDouble(getDifferenceHours(forthSign,"11:45"))*2;//计算请假结束时间到11：45这段时间的实际工时
                                     }
                                 }
-                                b.writeLog("周六日期:"+key3+";周六迟到分钟数:"+lateTime+";周六早退分钟数:"+earlyTime+";周六旷工:"+countHours2+";周六上午实际工时："+actualWorkingHours);
+                                //b.writeLog("周六日期:"+key3+";周六迟到分钟数:"+lateTime+";周六早退分钟数:"+earlyTime+";周六旷工:"+countHours2+";周六上午实际工时："+actualWorkingHours);
                                 saturdayList1.add(key3);
                             }
                         }
@@ -846,16 +846,22 @@
                         String newcnt8=decimalFormat1.format(cnt8);
                         out.println("<td align='center'>" + newcnt8 + "</td>");//加点工时
                         //加班工时
-                        String addedHoursSql = "SELECT case when SUM (OVERTIME_HOURS) is null then 0.00 else SUM (OVERTIME_HOURS) end FROM uf_WorkOvertime " +
-                                "WHERE WORK_DATE LIKE '%" + month + "%' AND userid=(select id from hrmresource where workcode like '%" + workCode + "%') and " +
-                                "WORK_DATE in(SELECT CURDATE from UF_ATTENDANCE where ATTENDANCESTATUS in(1,2))  and OVERTIME_TYPE in (1,3) ";
-                        RecordSet rs16 = new RecordSet();
-                        rs16.execute(addedHoursSql);
-                        //b.writeLog("加班工时sql:"+addedHoursSql);
-                        rs16.next();
-                        Double cnt9 = rs16.getDouble(1);
-                        String newcnt9=decimalFormat1.format(cnt9);
-                        out.println("<td align='center'>" + newcnt9 + "</td>");//加班工时
+                        //获取该用户的薪资方式 0固薪 1时薪 固薪则加班工时为0 时薪则计算调休为否的加班时长
+                        int type=getSalaryType(userid);
+                        if(type==0){
+                            out.println("<td align='center'>" + 0.00 + "</td>");//加班工时
+                        }else if(type==1){
+                            String addedHoursSql = "SELECT case when SUM (OVERTIME_HOURS) is null then 0.00 else SUM (OVERTIME_HOURS) end FROM uf_WorkOvertime " +
+                                    "WHERE WORK_DATE LIKE '%" + month + "%' AND userid=(select id from hrmresource where workcode like '%" + workCode + "%') and " +
+                                    "WORK_DATE in(SELECT CURDATE from UF_ATTENDANCE where ATTENDANCESTATUS in(1,2))  and OVERTIME_TYPE in (1,3) and break_off=1 ";
+                            RecordSet rs16 = new RecordSet();
+                            rs16.execute(addedHoursSql);
+                            //b.writeLog("加班工时sql:"+addedHoursSql);
+                            rs16.next();
+                            Double cnt9 = rs16.getDouble(1);
+                            String newcnt9=decimalFormat1.format(cnt9);
+                            out.println("<td align='center'>" + newcnt9 + "</td>");//加班工时
+                        }
                         //调休工时
                         String paidLeaveTimeSql  =  "SELECT nvl(SUM(overtime_hours),0.00) FROM uf_WorkOvertime WHERE break_off = 0 AND WORK_DATE LIKE '%" + month + "%' AND userid='"+userid+"'";
                         Double cnt11=getDoubleNumber(paidLeaveTimeSql);
@@ -2660,6 +2666,18 @@
                     standardList.add(2, "13:00:00:1");
                     standardList.add(3, "17:15:00:2");
                     return standardList;
+                }
+            %>
+            <%!
+                /**
+                 * 获取该用户的薪资方式
+                 * @return List<Integer>
+                 */
+                private static int getSalaryType(String userId) {
+                   String getSalaryTypeSql="select c.field1 from hrmresource h LEFT JOIN cus_fielddata c on h.id=c.id " +
+                           "where c.scopeid=1 and h.accounttype !=1 and h.id="+userId+"";
+                   int type=getId(getSalaryTypeSql);
+                   return type;
                 }
             %>
         </table>

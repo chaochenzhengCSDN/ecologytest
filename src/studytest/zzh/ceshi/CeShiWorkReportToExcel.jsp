@@ -2213,7 +2213,7 @@
                         boolean result10 = (("0").equals(morningSignIn)) && (("0").equals(morningSignBack)) && (("1").equals(afternoonSignIn)) && (("1").equals(afternoonSignBack));//下午签到 下午签退
                         //比较打卡日期 在哺乳假开始日期与结束日期之间
                         if (startDate.compareTo(curdate) <= 0 && endDate.compareTo(curdate) >= 0) {
-=                            for (String time : finalTimeList) {
+                            for (String time : finalTimeList) {
                                 //上午签到晚1小时
                                 if (result1) {
                                     //取出上午签到时间

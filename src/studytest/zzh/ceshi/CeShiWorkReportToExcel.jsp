@@ -38,6 +38,9 @@
     String yedate = curdate1 + "-31";
     c.add(Calendar.MONTH, -1);
     c.add(Calendar.MONTH, 2);
+    String fileName = month+"月份考勤报表";
+    response.setContentType("application/vnd.ms-excel");
+    response.setHeader("Content-disposition","attachment;filename="+new String(fileName.getBytes("GBK"),"iso8859-1")+".xls");
 
 %>
 
@@ -876,31 +879,6 @@
                         out.println("</tr>");
         %>
         <table border="0" width="100%">
-            <tbody>
-            <tr>
-                <td align="right"></td>
-            </tr>
-            <tr align="center" border="0">
-                <td>
-                    <a href="javascript:void(0);"
-                       onclick="todo('/iiot/studytest/zzh/ceshi/WholeDetail.jsp?month=<%=month%>&userId=<%=id%>','总明细表')"
-                       class="e8_btn_top_a">总明细表</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-                    <a href="javascript:void(0);"
-                       onclick="todo('/iiot/studytest/zzh/ceshi/BusinessDetail.jsp?month=<%=month%>&userId=<%=id%>','出差明细')"
-                       class="e8_btn_top_a">出差明细</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-                    <a href="javascript:void(0);"
-                       onclick="todo('/iiot/studytest/zzh/ceshi/OverTimeDetail.jsp?month=<%=month%>&userId=<%=id%>','加班明细')"
-                       class="e8_btn_top_a">加班明细</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-                    <a href="javascript:void(0);"
-                       onclick="todo('/iiot/studytest/zzh/ceshi/AbsenteeismDetail.jsp?month=<%=month%>&userId=<%=id%>','旷工明细')"
-                       class="e8_btn_top_a">旷工明细</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-                    <a href="javascript:void(0);"
-                       onclick="todo('/iiot/studytest/zzh/ceshi/LeaveDetail.jsp?month=<%=month%>&userId=<%=id%>','请假明细')"
-                       class="e8_btn_top_a">请假明细</a>
-                </td>
-            </tr>
-            </tbody>
-
             <%
                             }
                         } else {

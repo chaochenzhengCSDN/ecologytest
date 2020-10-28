@@ -41,7 +41,7 @@
     String fileName = month+"月份考勤报表";
     response.setContentType("application/vnd.ms-excel");
     response.setHeader("Content-disposition","attachment;filename="+new String(fileName.getBytes("GBK"),"iso8859-1")+".xls");
-
+    month=month.substring(0,4)+"-"+month.substring(5,7);
 %>
 
 <head>

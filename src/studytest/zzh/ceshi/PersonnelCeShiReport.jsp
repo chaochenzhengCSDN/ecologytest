@@ -219,7 +219,7 @@ String month =accDate.split("-")[1];
 							<option value="2023" <%=year.equals("2023")?"selected":"" %>>2023</option>
 							<option value="2024" <%=year.equals("2024")?"selected":"" %>>2024</option>
 							<option value="2025" <%=year.equals("2025")?"selected":"" %>>2025</option>
-						</select>
+						</select>——
 						<select id="month" style="width: 50px;">
 							<option value="01" <%=month.equals("01")?"selected":"" %>>01</option>
 							<option value="02" <%=month.equals("02")?"selected":"" %>>02</option>

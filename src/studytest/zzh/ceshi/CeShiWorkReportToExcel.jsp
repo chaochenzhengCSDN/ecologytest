@@ -172,7 +172,7 @@
                     out.println("<td align='center'>" + subcompanyname + "</td>");//公司
                     out.println("<td align='center'>" + departmentname + "</td>");//部门
                     out.println("<td align='center'>" + lastname + "</td>");//姓名
-                    out.println("<td align='center'>" + month + "</td>");//月份
+                    out.println("<td align='center'>" + month.substring(0,7) + "</td>");//月份
                     out.println("<td align='center'>" + dueDays + "</td>");//应出勤 周一到周五*1 + 周六*0.5
                     out.println("<td align='center'>" + basicWorkTime + "</td>");//基本工时
 

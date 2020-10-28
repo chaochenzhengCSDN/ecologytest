@@ -13,9 +13,9 @@
 		var valuefield = "#field23147";//请假类型
 		var annualHoursfield = "#field215017";//可用年假天数
 		var relaxHoursfield = "#field215018";//可用调休小时数
-		var startDatefield = "#field23149";//起始日期
+		var startDatefield = "#field23148";//起始日期
 		var endDatefield = "#field23150";//截止日期
-		var startTimefield = "#field216576";//起始时间
+		var startTimefield = "#field23149";//起始时间
 		var endTimefield = "#field23151";//截止时间
 		var hoursfield = "#field23153";//请假小时数
 		var daysfield = "#field26207";//请假天数

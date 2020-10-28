@@ -7,32 +7,20 @@
 
 <head>
 	<script type="text/javascript">
-		/* 测试环境 */
-		/*
-		var userIdfield = "#field153052";//姓名
-		var applicationDatefield = "#field153055";//申请日期
-		var valuefield = "#field153056";//请假类型
-		var annualHoursfield = "#field153067";//可用年假天数
-		var relaxHoursfield = "#field153068";//可用调休小时数
-		var startDatefield = "#field153057";//起始日期
-		var endDatefield = "#field153059";//截止日期
-		var startTimefield = "#field153058";//起始时间
-		var endTimefield = "#field153060";//截止时间
-		var hoursfield = "#field153061";//请假小时数
-		var daysfield = "#field153065";//请假天数
-		*/
 		/* 正式环境 */
-		var userIdfield = "#field216570";//申请人
-		var applicationDatefield = "#field216573";//申请日期
-		var valuefield = "#field216574";//请假类型
-		var annualHoursfield = "#field216585";//可用年假天数
-		var relaxHoursfield = "#field216586";//可用调休小时数
-		var startDatefield = "#field216575";//起始日期
-		var endDatefield = "#field216577";//截止日期
+		var userIdfield = "#field23143";//申请人
+		var applicationDatefield = "#field23146";//申请日期
+		var valuefield = "#field23147";//请假类型
+		var annualHoursfield = "#field215017";//可用年假天数
+		var relaxHoursfield = "#field215018";//可用调休小时数
+		var startDatefield = "#field23149";//起始日期
+		var endDatefield = "#field23150";//截止日期
 		var startTimefield = "#field216576";//起始时间
-		var endTimefield = "#field216578";//截止时间
-		var hoursfield = "#field216579";//请假小时数
-		var daysfield = "#field216583";//请假天数
+		var endTimefield = "#field23151";//截止时间
+		var hoursfield = "#field23153";//请假小时数
+		var daysfield = "#field26207";//请假天数
+		var deadlineId ="#field227518" ;//截至日期
+		var deadlinespanId ="#field227518span" ;//截至日期
 		var userId = $(userIdfield).val();//姓名
 		var applicationDate = $(applicationDatefield).val();//申请日期
 		var wholeHours;//总小时数
@@ -56,22 +44,22 @@
 
 				//console.log("调休小时数:" + relaxHours);
 				if (startDate != "") {
-					bool = getBeforeDate();//申请日期3天前校验
-					if (!bool) {
-						return bool;
+					//bool = getBeforeDate();//申请日期3天前校验
+					// if (!bool) {
+					// 	return bool;
+					// }
+					//如果是调休申请，只能申请当月2020.07.08
+					if(value==8){
+						if(applicationDate.substring(0,7)<startDate.substring(0,7)||applicationDate.substring(0,7)<endDate.substring(0,7)){
+							window.top.Dialog.alert("调休只能申请当月");
+							bool =false;
+							return bool;
+						}
 					}
-                    //如果是调休申请，只能申请当月2020.07.08
-                    if(value==8){
-                        if(applicationDate.substring(0,7)<startDate.substring(0,7)||applicationDate.substring(0,7)<endDate.substring(0,7)){
-                            window.top.Dialog.alert("调休只能申请当月");
-                            bool =false;
-                            return bool;
-                        }
-                    }
 				}
 				if (wholeHours >= 1) {
-					
-					//请假类型为年休假 value=0 
+
+					//请假类型为年休假 value=0
 					if (value == 0) {
 						//请假小时数小于等与调休小时数
 						if (Number(wholeHours) <= Number(relaxHours)) {
@@ -100,7 +88,7 @@
 								bool = false;
 								return bool;
 							} else {
-								//请假小时数小于等于年假小时数 大于调休小时数 
+								//请假小时数小于等于年假小时数 大于调休小时数
 								window.top.Dialog.alert("可用调休时长不足，请切换年休假");
 								bool = false;
 								return bool;
@@ -108,19 +96,19 @@
 						}
 						//请假类型为事假 value=9
 					} else if (value == 9) {
-						//如果请假为事假 请假小时数小于等于调休小时数 
+						//如果请假为事假 请假小时数小于等于调休小时数
 						if (Number(wholeHours) <= Number(relaxHours)) {
 							window.top.Dialog.alert("调休假时长充足，请切换成调休假");
 							bool = false;
 						} else {
-							//如果请假为事假 请假小时数大于调休小时数 请假小时数小于等于年假小时数 
+							//如果请假为事假 请假小时数大于调休小时数 请假小时数小于等于年假小时数
 							if (Number(wholeHours) <= Number(annualHours1)) {
 								window.top.Dialog.alert("年休假时长充足，请切换成年休假");
 								bool = false;
 								return bool;
 							}
 						}
-						//请假类型为其他类型    	
+						//请假类型为其他类型
 					} else {
 						//请假小时数小于可用调休小时数
 						if (Number(wholeHours) <= Number(relaxHours)) {
@@ -175,7 +163,7 @@
 			}
 		});
 
-		/*	
+		/*
 			在请假类型、起始日期、起始时间、截止日期、截止时间添加绑定事件
 			获取请假天数和请假小时数
 		*/
@@ -190,6 +178,10 @@
 		});
 		jQuery(endDatefield).bindPropertyChange(function () {
 			checkDate();
+			//根据截至日期获取两天后的日期来控制流程流转 2020-10-09 zcc
+			var endDate = $(endDatefield).val();//截止日期
+			$(deadlineId).val(getAfterDate(endDate));
+			$(deadlinespanId).html(getAfterDate(endDate));
 		});
 		jQuery(endTimefield).bindPropertyChange(function () {
 			checkDate();
@@ -240,12 +232,7 @@
 			var startTime = $(startTimefield).val();//起始时间
 			var endTime = $(endTimefield).val();//截止时间
 			var value = $(valuefield).val();//请假类型
-			console.log("起始日期:" + startDate);
-			console.log("截止日期:" + endDate);
-			console.log("起始时间:" + startTime);
-			console.log("截止时间:" + endTime);
 			var res = startTime !== "" && endTime !== "" && startDate !== "" && endDate !== "" &&((startDate === endDate && startTime < endTime) || (startDate < endDate));
-			console.log("哦哦哦哦:" + res);
 			//改变所选时间
 			if(value===0){
 				var startTimeChange1 = startTime.split(":");
@@ -271,7 +258,7 @@
 					jQuery(endTimefield+"_span").html("17:15");
 				}
 			}
-			
+
 			if (startTime !== "" && endTime !== "" && startDate !== "" && endDate !== "" &&((startDate === endDate && startTime < endTime) || (startDate < endDate))) {
 				jQuery.ajax({
 					type: "POST",
@@ -288,20 +275,20 @@
 						jQuery(relaxHoursfield).val(json.wholeOvertimehours);
 						jQuery(relaxHoursfield+"span").html(json.wholeOvertimehours);
 						jQuery(relaxHoursfield+"_span").html(json.wholeOvertimehours);
-                        wholeHours = json.wholeLeaveHours;
-                        $(hoursfield).val(wholeHours);
-                        $(hoursfield + "span").html(wholeHours);
-                        $(hoursfield).attr("readonly", "readonly");
-                        $(hoursfield + "span").attr("style", "display:none;");
+						wholeHours = json.wholeLeaveHours;
+						$(hoursfield).val(wholeHours);
+						$(hoursfield + "span").html(wholeHours);
+						$(hoursfield).attr("readonly", "readonly");
+						$(hoursfield + "span").attr("style", "display:none;");
 					}
 				});
 				if(value==0){
 					//请假天数
 					/**
-						1、3.25为0.5天
-						2、4.23也为0.5天
-					*/
-					//向下取整数，比如7.5，向下取整就是7
+					 1、3.25为0.5天
+					 2、4.23也为0.5天
+					 */
+							//向下取整数，比如7.5，向下取整就是7
 					var leaveDays = Math.floor(wholeHours / 7.5);
 					//计算小时数，总的小时数-向下取整*7.5 = 多余的小时数
 					var leaveHours = wholeHours - (7.5 * leaveDays);
@@ -352,6 +339,24 @@
 				return false;
 			}
 			return true;
+		};
+
+		/*
+			获取两天后的日期
+		*/
+		function getAfterDate(sTime) {
+			var curDate = new Date(sTime);
+			curDate.setDate(curDate.getDate() + 2);
+			var curMonth = curDate.getMonth() + 1;
+			if (curMonth < 10) {
+				curMonth = "0" + curMonth;
+			}
+			var curDay = curDate.getDate();
+			if (curDay < 10) {
+				curDay = "0" + curDay;
+			}
+			var minDate = curDate.getFullYear() + '-' + curMonth + '-' + curDay;
+			return minDate;
 		};
 	</script>
 

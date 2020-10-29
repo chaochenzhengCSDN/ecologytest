@@ -98,17 +98,17 @@
                 return bool;
             }
         });
-    jQuery("button[name='addbutton0']").click(function () {//明细表添加一行，给明细表字段添加事件
-        var rowindex = jQuery("input[name='check_node_0']").last().val();
-        setEvent(rowindex);
-        $(workHour_field + rowindex).attr("readOnly", "readOnly");
-    });
-    jQuery("button[name='delbutton0']").click(function () {//明细表添加一行，给明细表字段添加事件
-        var rowindex = jQuery("input[name='check_node_0']").last().val();
-        wholeHoursChange();
-        $(workHour_field + rowindex).attr("readOnly", "readOnly");
-    });
-    /**  overtimeType 加班类型
+        jQuery("button[name='addbutton0']").click(function () {//明细表添加一行，给明细表字段添加事件
+            var rowindex = jQuery("input[name='check_node_0']").last().val();
+            setEvent(rowindex);
+            $(workHour_field + rowindex).attr("readOnly", "readOnly");
+        });
+        jQuery("button[name='delbutton0']").click(function () {//明细表添加一行，给明细表字段添加事件
+            var rowindex = jQuery("input[name='check_node_0']").last().val();
+            wholeHoursChange();
+            $(workHour_field + rowindex).attr("readOnly", "readOnly");
+        });
+        /**  overtimeType 加班类型
           *  0 正常工作日
           *  1 非工作日及法定假日
           *  2 晨会

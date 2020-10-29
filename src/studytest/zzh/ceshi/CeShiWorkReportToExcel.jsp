@@ -86,8 +86,8 @@
             <td align='center'><b>调休</b></td>
             <td align='center'><b>年休假</b></td>
             <td align='center'><b>事假</b></td>
-            <td align='center'><b>加点工时</b></td>
             <td align='center'><b>加班工时</b></td>
+            <td align='center'><b>加点工时</b></td>
             <td align='center'><b>调休工时</b></td>
             <td align='center'><b>总共</b></td>
             <td align='center'><b>已用</b></td>
@@ -809,6 +809,17 @@
                             String cnt77 = df2.format(cnt7);
                             out.println("<td align='center'>" + cnt77 + "</td>");
                         }
+
+                        //加班工时
+                        String addedHoursSql = "SELECT case when SUM (OVERTIME_HOURS) is null then 0.00 else SUM (OVERTIME_HOURS) end FROM uf_WorkOvertime " +
+                                "WHERE WORK_DATE LIKE '%" + month + "%' AND userid=(select id from hrmresource where workcode like '%" + workCode + "%') and " +
+                                "WORK_DATE in(SELECT CURDATE from UF_ATTENDANCE where ATTENDANCESTATUS in(1,2))  and OVERTIME_TYPE in (1,3) ";
+                        RecordSet rs16 = new RecordSet();
+                        rs16.execute(addedHoursSql);
+                        rs16.next();
+                        Double cnt9 = rs16.getDouble(1);
+                        String newcnt9=decimalFormat1.format(cnt9);
+                        out.println("<td align='center'>" + newcnt9 + "</td>");//加班工时
                         //加点工时
                         String OvertimebyHourSql = "SELECT case when SUM (OVERTIME_HOURS) is null then 0.00 else SUM (OVERTIME_HOURS) end FROM uf_WorkOvertime " +
                                 "WHERE WORK_DATE LIKE '%" + month + "%' AND userid='"+userid+"' AND " +
@@ -820,16 +831,6 @@
                         DecimalFormat decimalFormat1=new DecimalFormat("0.00");
                         String newcnt8=decimalFormat1.format(cnt8);
                         out.println("<td align='center'>" + newcnt8 + "</td>");//加点工时
-                        //加班工时
-                        String addedHoursSql = "SELECT case when SUM (OVERTIME_HOURS) is null then 0.00 else SUM (OVERTIME_HOURS) end FROM uf_WorkOvertime " +
-                                "WHERE WORK_DATE LIKE '%" + month + "%' AND userid=(select id from hrmresource where workcode like '%" + workCode + "%') and " +
-                                "WORK_DATE in(SELECT CURDATE from UF_ATTENDANCE where ATTENDANCESTATUS in(1,2))  and OVERTIME_TYPE in (1,3) ";
-                        RecordSet rs16 = new RecordSet();
-                        rs16.execute(addedHoursSql);
-                        rs16.next();
-                        Double cnt9 = rs16.getDouble(1);
-                        String newcnt9=decimalFormat1.format(cnt9);
-                        out.println("<td align='center'>" + newcnt9 + "</td>");//加班工时
                         //调休工时
                         String paidLeaveTimeSql  =  "SELECT nvl(SUM(overtime_hours),0.00) FROM uf_WorkOvertime WHERE break_off = 0 AND WORK_DATE LIKE '%" + month + "%' AND userid='"+userid+"'";
                         Double cnt11=getDoubleNumber(paidLeaveTimeSql);

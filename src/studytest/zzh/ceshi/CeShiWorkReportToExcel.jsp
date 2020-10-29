@@ -809,7 +809,7 @@
                             String cnt77 = df2.format(cnt7);
                             out.println("<td align='center'>" + cnt77 + "</td>");
                         }
-
+                        DecimalFormat decimalFormat1=new DecimalFormat("0.00");
                         //加班工时
                         String addedHoursSql = "SELECT case when SUM (OVERTIME_HOURS) is null then 0.00 else SUM (OVERTIME_HOURS) end FROM uf_WorkOvertime " +
                                 "WHERE WORK_DATE LIKE '%" + month + "%' AND userid=(select id from hrmresource where workcode like '%" + workCode + "%') and " +
@@ -828,7 +828,7 @@
                         rs15.execute(OvertimebyHourSql);
                         rs15.next();
                         Double cnt8 = rs15.getDouble(1);
-                        DecimalFormat decimalFormat1=new DecimalFormat("0.00");
+
                         String newcnt8=decimalFormat1.format(cnt8);
                         out.println("<td align='center'>" + newcnt8 + "</td>");//加点工时
                         //调休工时

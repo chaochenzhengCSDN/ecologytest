@@ -833,7 +833,7 @@
                             String cnt77 = df2.format(cnt7);
                             out.println("<td align='center'>" + cnt77 + "</td>");
                         }
-
+                        DecimalFormat decimalFormat1=new DecimalFormat("0.00");
                         //加班工时
                         //获取该用户的薪资方式 0固薪 1时薪 固薪则加班工时为0 时薪则计算调休为否的加班时长
                         int type=getSalaryType(userid);
@@ -860,7 +860,7 @@
                         //b.writeLog("加点工时sql:"+OvertimebyHourSql);
                         rs15.next();
                         Double cnt8 = rs15.getDouble(1);
-                        DecimalFormat decimalFormat1=new DecimalFormat("0.00");
+
                         String newcnt8=decimalFormat1.format(cnt8);
                         out.println("<td align='center'>" + newcnt8 + "</td>");//加点工时
                         //调休工时

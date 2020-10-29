@@ -43,10 +43,10 @@ import="weaver.general.Util"%> <%@page import="weaver.conn.RecordSet"%>
 
                 //console.log("调休小时数:" + relaxHours);
                 if (startDate != "") {
-                    //bool = getBeforeDate();//申请日期3天前校验
-                    // if (!bool) {
-                    // 	return bool;
-                    // }
+                    bool = getBeforeDate();//申请日期3天前校验
+                    if (!bool) {
+                    	return bool;
+                    }
                     //如果是调休申请，只能申请当月2020.07.08
                     if(value==8){
                         if(applicationDate.substring(0,7)<startDate.substring(0,7)||applicationDate.substring(0,7)<endDate.substring(0,7)){

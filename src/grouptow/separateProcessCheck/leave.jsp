@@ -13,9 +13,9 @@
 		var valuefield = "#field23147";//请假类型
 		var annualHoursfield = "#field215017";//可用年假天数
 		var relaxHoursfield = "#field215018";//可用调休小时数
-		var startDatefield = "#field23149";//起始日期
+		var startDatefield = "#field23148";//起始日期
 		var endDatefield = "#field23150";//截止日期
-		var startTimefield = "#field216576";//起始时间
+		var startTimefield = "#field23149";//起始时间
 		var endTimefield = "#field23151";//截止时间
 		var hoursfield = "#field23153";//请假小时数
 		var daysfield = "#field26207";//请假天数
@@ -81,7 +81,7 @@
 						//console.log("checkCustomize -> wholeHours > relaxHours", wholeHours > relaxHours)
 						if (Number(wholeHours) > Number(relaxHours)) {
 							//请假小时数大于年假小时数
-							if (Number(wholeHours) > Number(annualHours1)) {
+							if (Number(wholeHours) > Number(annualHours1*7.5)) {
 								//console.log(annualHours1);
 								//console.log(1231);
 								window.top.Dialog.alert("可用调休时长不足，请切换事假");
@@ -102,7 +102,7 @@
 							bool = false;
 						} else {
 							//如果请假为事假 请假小时数大于调休小时数 请假小时数小于等于年假小时数
-							if (Number(wholeHours) <= Number(annualHours1)) {
+							if (Number(wholeHours) <= Number(annualHours1*7.5)) {
 								window.top.Dialog.alert("年休假时长充足，请切换成年休假");
 								bool = false;
 								return bool;
@@ -117,7 +117,7 @@
 							return bool;
 						} else {
 							//请假小时数大于可用调休小时数 但小于等于年假小时数
-							if (Number(wholeHours) <= Number(annualHours1)) {
+							if (Number(wholeHours) <= Number(annualHours1*7.5)) {
 								window.top.Dialog.alert("年休假时长充足，请切换成年休假");
 								bool = false;
 								return bool;

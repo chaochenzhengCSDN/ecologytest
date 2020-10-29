@@ -17,14 +17,14 @@
         var startTime_field ="#field156017_";         // 开始时间
         var endTime_field ="#field156018_";           // 结束时间*/
     /*  正式环境 */
-        var overtimeType_field = "#field216566_";     // 加班类型下拉框
-        var workHour_field = "#field216564_" ;        // 加班时长input框
-        var applicationDate_field = "#field216561_" ; // 加班日期
+        var overtimeType_field = "#field142517_";     // 加班类型下拉框
+        var workHour_field = "#field23194_" ;        // 加班时长input框
+        var applicationDate_field = "#field23191_" ; // 加班日期
         var is_rest_field = "#field216567_";          // 是否调休选项框
-        var total_duration_field = "#field216560";    // 时长总计（小时）
-        var userid_field = "#field216556";            // 加班申请人id
-        var startTime_field ="#field216685_";         // 开始时间
-        var endTime_field ="#field216686_";           // 结束时间
+        var total_duration_field = "#field24541";    // 时长总计（小时）
+        var userid_field = "#field23188";            // 加班申请人id
+        var startTime_field ="#field23201_";         // 开始时间
+        var endTime_field ="#field23202_";           // 结束时间
         jQuery(document).ready(function () {
             setEvent(0);
             $(workHour_field + "0").attr("readOnly", "readOnly");

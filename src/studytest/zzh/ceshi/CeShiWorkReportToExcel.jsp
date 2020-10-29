@@ -2557,6 +2557,18 @@
                     return standardList;
                 }
             %>
+            <%!
+                /**
+                 * 获取该用户的薪资方式
+                 * @return List<Integer>
+                 */
+                private static int getSalaryType(String userId) {
+                    String getSalaryTypeSql="select c.field1 from hrmresource h LEFT JOIN cus_fielddata c on h.id=c.id " +
+                            "where c.scopeid=1 and h.accounttype !=1 and h.id="+userId+"";
+                    int type=getId(getSalaryTypeSql);
+                    return type;
+                }
+            %>
         </table>
 </div>
 </body>

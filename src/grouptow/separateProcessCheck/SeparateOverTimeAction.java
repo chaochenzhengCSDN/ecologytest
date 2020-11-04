@@ -27,7 +27,7 @@ public class SeparateOverTimeAction implements Action {
                 String dateTime=overTimeInfoEntity.getDateTime();
                 Double overtimeHours=overTimeInfoEntity.getOvertimeHours();
                 String userId=overTimeInfoEntity.getUserId();
-                int breakOff=overTimeInfoEntity.getBreak_off();
+                int breakOff=1;
                 //根据工作日其计算当天星期 break_off=0调休 正常工作日0
                 String selectSql1="select week,isAttendance,isHoliday from uf_attendance where curdate='"+dateTime+"' ";
                 RecordSet rs3 = new RecordSet();

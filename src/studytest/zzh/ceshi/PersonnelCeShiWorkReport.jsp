@@ -1425,7 +1425,6 @@
                  */
                 public static void changeLeaveTime(Map<String, List<String>> value, String id, String likeDate, int type, String leaveinFlag, String leaveoutFlag) {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    BaseBean b = new BaseBean();
                     //全天标准打卡数据
                     List<String> timeList1 = new ArrayList<String>();
                     timeList1.add("08:30:00:" + leaveinFlag);
@@ -1436,7 +1435,6 @@
                     List<String> timeList6 = new ArrayList<String>();
                     timeList6.add("08:30:00:" + leaveinFlag);
                     timeList6.add("11:45:00:" + leaveoutFlag);
-
 
                     String sql = "SELECT start_date,start_time,end_date,end_time from uf_AskForLeave WHERE type = " + type + " AND userid = " + id + " and (start_date like '%" + likeDate + "%' or end_date like '%" + likeDate + "%') ORDER BY start_date";
                     RecordSet rs = new RecordSet();
@@ -1452,63 +1450,85 @@
                         String startTime = Util.null2String(rs.getString("start_time"));
                         //调休(年假)请假结束时间
                         String endTime = Util.null2String(rs.getString("end_time"));
-                        //1.处理调休请假期间的打卡数据
-                        Calendar c1 = Calendar.getInstance();
-                        try {
-                            c1.setTime(sdf.parse(startDate));
-                            long time = sdf.parse(endDate).getTime();
-                            for (long d = c1.getTimeInMillis(); d <= time; d = getTimeMillis(c1)) {
-                                dateList.add(sdf.format(d));
-                            }
-                            for (int i = 1; i < dateList.size() - 1; i++) {
-                                String valueDate = dateList.get(i);
-                                if (Integer.parseInt(valueDate.split("-")[1]) == Integer.parseInt(likeDate.split("-")[1])) {
-                                    finalDateList.add(dateList.get(i));
-                                }
-                            }
-                            for (String valueDate : finalDateList) {
+                        List<String> wholeDate=findDates(startDate,endDate);
+                        //请假日期不仅包括开始日期、结束日期，还包含其他日期 则需要对中间日期进行处理
+                        if(wholeDate.size()>2){
+                            for (String valueDate : wholeDate) {
                                 String attendanceSql = "select attendancestatus from uf_attendance where curdate = '" + valueDate + "'";//根据日期查询排版表
                                 int attendancestatus = getId(attendanceSql);
-                                if (attendancestatus == 0) {
-                                    //正常出勤1天
-                                    value.put(valueDate, timeList1);
-                                } else if (attendancestatus == 2) {
-                                    //单休六出勤半天
-                                    value.put(valueDate, timeList6);
-                                }
+                                //如果当天不为起始日期，也不为截止日期
+                                if(!valueDate.equals(startDate)&&!valueDate.equals(endDate)){
+                                    if (attendancestatus == 0) {
+                                        //正常出勤1天
+                                        value.put(valueDate, timeList1);
+                                    } else if (attendancestatus == 2) {
+                                        //单休六出勤半天
+                                        value.put(valueDate, timeList6);
+                                    }
+                                }else
+                                    //如果当天为起始日期
+                                    if(valueDate.equals(startDate)&&!valueDate.equals(endDate)){
+                                        if (attendancestatus == 0) {
+                                            //正常出勤1天
+                                            String startTime1=startTime;
+                                            String endTime1 = "17:15";
+                                            changeTodayTime(value, startTime1, endTime1, startDate, leaveinFlag, leaveoutFlag);
+                                        } else if (attendancestatus == 2) {
+                                            //单休六出勤半天
+                                            String startTime1=startTime;
+                                            String endTime1 = "11:45";
+                                            changeSaturdayTime(value, startTime1, endTime1, startDate, leaveinFlag, leaveoutFlag);
+                                        }
+                                    }else
+                                        //如果当天为截止日期
+                                        if(!valueDate.equals(startDate)&&valueDate.equals(endDate)){
+                                            if (attendancestatus == 0) {
+                                                //正常出勤1天
+                                                String startTime1="08:30";
+                                                String endTime1 = endTime.compareTo("17:15") >= 0 ? "17:15" : endTime;
+                                                changeTodayTime(value, startTime1, endTime1, endDate, leaveinFlag, leaveoutFlag);
+                                            } else if (attendancestatus == 2) {
+                                                //单休六出勤半天
+                                                String startTime1="08:30";
+                                                String endTime1 = endTime.compareTo("11:45") >= 0 ? "11:45" : endTime;
+                                                changeSaturdayTime(value, startTime1, endTime1, endDate, leaveinFlag, leaveoutFlag);
+                                            }
+                                        }
                             }
+                        }else
                             //请假开始日期和请假结束日期不为同一天
-                            if (!startDate.equals(endDate)) {
+                            if (wholeDate.size()==2) {
                                 //----2020.07.13---start---
                                 //处理调休(年假)请假开始当天的考勤打卡时间
                                 String startDateStatusSql = "select attendancestatus from uf_attendance where curdate = '" + startDate + "'";//根据日期查询排版表
                                 int startDateStatus = getId(startDateStatusSql);
                                 if (startDateStatus == 0) {
                                     //正常出勤1天
-                                    endTime = "17:15";
-                                    //b.writeLog("startDate:"+startDate);
-                                    changeTodayTime(value, startTime, endTime, startDate, leaveinFlag, leaveoutFlag);
+                                    String startTime1=startTime;
+                                    String endTime1 = "17:15";
+                                    changeTodayTime(value, startTime1, endTime1, startDate, leaveinFlag, leaveoutFlag);
                                 } else if (startDateStatus == 2) {
                                     //单休六出勤半天
-                                    endTime = "11:45";
-                                    changeSaturdayTime(value, startTime, endTime, startDate, leaveinFlag, leaveoutFlag);
+                                    String startTime1=startTime;
+                                    String endTime1 = "11:45";
+                                    changeSaturdayTime(value, startTime1, endTime1, startDate, leaveinFlag, leaveoutFlag);
                                 }
                                 //调休(年假)请假结束日期当天的打卡记录集合
                                 String endDateStatusSql = "select attendancestatus from uf_attendance where curdate = '" + endDate + "'";//根据日期查询排版表
                                 int endDateStatus = getId(endDateStatusSql);
                                 if (endDateStatus == 0) {
                                     //正常出勤1天
-                                    startTime = "08:30";
-                                    endTime = endTime.compareTo("17:15") >= 0 ? "17:15" : endTime;
-                                    changeTodayTime(value, startTime, endTime, endDate, leaveinFlag, leaveoutFlag);
+                                    String startTime1="08:30";
+                                    String endTime1 = endTime.compareTo("17:15") >= 0 ? "17:15" : endTime;
+                                    changeTodayTime(value, startTime1, endTime1, endDate, leaveinFlag, leaveoutFlag);
                                 } else if (endDateStatus == 2) {
                                     //单休六出勤半天
-                                    startTime = "08:30";
-                                    endTime = endTime.compareTo("11:45") >= 0 ? "11:45" : endTime;
-                                    changeSaturdayTime(value, startTime, endTime, endDate, leaveinFlag, leaveoutFlag);
+                                    String startTime1="08:30";
+                                    String endTime1 = endTime.compareTo("11:45") >= 0 ? "11:45" : endTime;
+                                    changeSaturdayTime(value, startTime1, endTime1, endDate, leaveinFlag, leaveoutFlag);
                                 }
                                 //----2020.07.13---end---
-                            } else {
+                            } else if (wholeDate.size()==1){
                                 //请假开始日期和请假结束日期为同一天
                                 String attendanceSql = "select attendancestatus from uf_attendance where curdate = '" + endDate + "'";//根据日期查询排版表
                                 int attendancestatus = getId(attendanceSql);
@@ -1517,10 +1537,7 @@
                                 } else if (attendancestatus == 2) {
                                     changeSaturdayTime(value, startTime, endTime, startDate, leaveinFlag, leaveoutFlag);//单休六出勤半天
                                 }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                            }else{}
                     }
                 }
             %>
